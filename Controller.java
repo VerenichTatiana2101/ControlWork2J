@@ -25,7 +25,7 @@ public class Controller {
                     scan.nextLine();
                 }
             }
-    
+
             switch (choice) {
                 case 1:
                     addToy();
@@ -135,6 +135,10 @@ public class Controller {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream("results.txt"), "UTF-8"))) {
             Random random = new Random();
+            if (model.getToys().isEmpty()) {
+                view.printMessage("игрушки отсутствуют");
+                return;
+            }
             for (int i = 0; i < 10; i++) {
                 int totalWeight = 0;
                 for (Toy toy : model.getToys()) {
@@ -172,7 +176,34 @@ public class Controller {
         }
     }
 
-    private void priceToy(){
+    // private void priceToy(){
+    // String filename = "results.txt";
+    // File file = new File(filename);
+
+    // if (file.exists()) {
+    // try {
+    // BufferedReader br = new BufferedReader(new FileReader(file));
+    // String firstLine = br.readLine();
+    // System.out.println(firstLine);
+    // br.close();
+
+    // BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+    // String remainingLines = "";
+    // String line;
+    // while ((line = br.readLine()) != null) {
+    // remainingLines += line + "\n";
+    // }
+    // bw.write(remainingLines);
+    // bw.close();
+    // } catch (IOException e) {
+    // System.out.println("Обновите очередь игрушек");
+    // }
+    // } else {
+    // System.out.println("Отсутствуют игрушки для розыгрыша");
+    // }
+    // }
+
+    private void priceToy() {
         String filename = "results.txt";
         File file = new File(filename);
 
@@ -200,4 +231,3 @@ public class Controller {
     }
 
 }
-    

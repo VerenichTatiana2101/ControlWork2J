@@ -28,4 +28,9 @@ public class Toy {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        return "Toy [id=" + id + ", name=" + name + ", weight=" + weight + "]";
+    }
 }

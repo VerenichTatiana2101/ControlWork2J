@@ -14,9 +14,18 @@ public class Controller {
     public void run() {
         while (true) {
             view.printMenu();
-            int choice = scan.nextInt();
-            scan.nextLine();
-
+            int choice = 0;
+            while (choice < 1 || choice > 7) {
+                System.out.print("Введите номер действия от 1 до 7: ");
+                if (scan.hasNextInt()) {
+                    choice = scan.nextInt();
+                    scan.nextLine();
+                } else {
+                    System.out.println("Вы ввели некорректное значение. Пожалуйста, введите число от 1 до 7.");
+                    scan.nextLine();
+                }
+            }
+    
             switch (choice) {
                 case 1:
                     addToy();
@@ -34,10 +43,10 @@ public class Controller {
                     runLottery();
                     break;
                 case 6:
-                    System.exit(0);
+                    priceToy();
                     break;
-                default:
-                    view.printMessage("Неверный выбор. Пожалуйста, введите номер действия от 1 до 6.");
+                case 7:
+                    System.exit(0);
                     break;
             }
             saveToysToFile("toys.txt");
@@ -45,63 +54,52 @@ public class Controller {
         }
     }
 
-    // public void run() {
-    // try (Scanner scanner = new Scanner(System.in)) {
-    // boolean running = true;
-
-    // while (running) {
-    // view.printMenu();
-    // int choice = scanner.nextInt();
-    // scanner.nextLine();
-
-    // switch (choice) {
-    // case 1:
-    // addToy();
-    // break;
-    // case 2:
-    // removeToy();
-    // break;
-    // case 3:
-    // editToy();
-    // break;
-    // case 4:
-    // view.printToyCatalog(model.getToys());
-    // break;
-    // case 5:
-    // runLottery();
-    // break;
-    // case 6:
-    // running = false;
-    // break;
-    // default:
-    // view.printMessage("Неверный выбор. Пожалуйста, введите номер действия от 1 до
-    // 6.");
-    // break;
-    // }
-    // }
-
-    // saveToysToFile("toys.txt");
-    // view.printMessage("Программа завершена.");
-    // }
-    // }
-
     private void addToy() {
         System.out.print("Введите ID игрушки: ");
-        int id = scan.nextInt();
-        scan.nextLine();
+        int id = 0;
+        while (id == 0) {
+            System.out.print("Введите число: ");
+            if (scan.hasNextInt()) {
+                id = scan.nextInt();
+                scan.nextLine();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.println("Вы ввели некорректное значение. Пожалуйста, введите число.");
+                scan.nextLine();
+            }
+        }
+
         System.out.print("Введите название игрушки: ");
         String name = scan.nextLine();
+
         System.out.print("Введите частоту выпадения игрушки: ");
-        int weight = scan.nextInt();
-        scan.nextLine();
+        int weight = 0;
+        while (weight < 1 || weight > 10) {
+            System.out.print("Введите число от 1 до 10: ");
+            if (scan.hasNextInt()) {
+                weight = scan.nextInt();
+                scan.nextLine();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.println("Вы ввели некорректное значение. Пожалуйста, введите число.");
+                scan.nextLine();
+            }
+        }
 
-        model.addToy(new Toy(id, name, weight));
-        view.printMessage("Игрушка успешно добавлена в каталог.");
-
+        if (id == 0 || name.isEmpty() || weight == 0) {
+            System.out.println("Вы не ввели все данные.");
+        } else {
+            model.addToy(new Toy(id, name, weight));
+            view.printMessage("Игрушка успешно добавлена в каталог.");
+        }
     }
 
     private void removeToy() {
-        System.out.print("Введите ID игрушки, которую нужно удалить: ");
+        System.out.println("Введите ID игрушки, которую нужно удалить: ");
+        while (!scan.hasNextInt()) {
+            System.out.println("Ошибка ввода данных, попробуйте ещё раз: ");
+            scan.next();
+        }
         int id = scan.nextInt();
         scan.nextLine();
 
@@ -111,19 +109,26 @@ public class Controller {
     }
 
     private void editToy() {
-        System.out.print("Введите ID игрушки, которую нужно отредактировать: ");
+        System.out.println("Введите ID игрушки, которую нужно удалить: ");
+        while (!scan.hasNextInt()) {
+            System.out.print("\033[H\033[2J");
+            System.out.println("Ошибка ввода данных, попробуйте ещё раз: ");
+            scan.next();
+        }
         int id = scan.nextInt();
         scan.nextLine();
 
-        System.out.print("Введите новое название игрушки: ");
-        String newName = scan.nextLine();
-        System.out.print("Введите новую частоту выпадения игрушки: ");
+        System.out.println("Введите новую частоту выпадения игрушки: ");
+        while (!scan.hasNextInt()) {
+            System.out.print("\033[H\033[2J");
+            System.out.println("Ошибка ввода данных, попробуйте ещё раз: ");
+            scan.next();
+        }
         int newWeight = scan.nextInt();
         scan.nextLine();
 
-        model.editToy(id, newName, newWeight);
+        model.editToy(id, newWeight);
         view.printMessage("Игрушка успешно отредактирована.");
-
     }
 
     private void runLottery() {
@@ -141,7 +146,7 @@ public class Controller {
                 for (Toy toy : model.getToys()) {
                     currentWeight += toy.getWeight();
                     if (randomNumber <= currentWeight) {
-                        String result = toy.getId() + " - " + toy.getName();
+                        String result = toy.toString();
                         view.printMessage(result);
                         writer.write(result);
                         writer.newLine();
@@ -150,7 +155,8 @@ public class Controller {
                 }
             }
         } catch (IOException e) {
-            view.printMessage("Ошибка при записи результатов розыгрыша: " + e.getMessage());
+            view.printMessage("Ошибка при записи результатов розыгрыша: " +
+                    e.getMessage());
         }
     }
 
@@ -165,4 +171,33 @@ public class Controller {
             view.printMessage("Ошибка при сохранении игрушек в файл: " + e.getMessage());
         }
     }
+
+    private void priceToy(){
+        String filename = "results.txt";
+        File file = new File(filename);
+
+        if (file.exists()) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String firstLine = br.readLine();
+                System.out.println(firstLine);
+                br.close();
+
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+                String remainingLines = "";
+                String line;
+                while ((line = br.readLine()) != null) {
+                    remainingLines += line + "\n";
+                }
+                bw.write(remainingLines);
+                bw.close();
+            } catch (IOException e) {
+                System.out.println("Обновите очередь игрушек");
+            }
+        } else {
+            System.out.println("Отсутствуют игрушки для розыгрыша");
+        }
+    }
+
 }
+    

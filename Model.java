@@ -19,10 +19,10 @@ public class Model {
         toys.removeIf(toy -> toy.getId() == id);
     }
 
-    public void editToy(int id, String newName, int newWeight) {
+    public void editToy(int id, int newWeight) {
         for (Toy toy : toys) {
             if (toy.getId() == id) {
-                toy.setName(newName);
+                toy.getName();
                 toy.setWeight(newWeight);
                 return;
             }
